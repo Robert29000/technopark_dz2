@@ -38,6 +38,8 @@ contract ERC20 is Context, IERC20 {
 
     uint256 private _totalSupply;
 
+    uint256 constant DAY_IN_SECONDS = 86400;
+
     string private _name;
     string private _symbol;
 
@@ -208,11 +210,14 @@ contract ERC20 is Context, IERC20 {
      * - `sender` must have a balance of at least `amount`.
      */
     function _transfer(address sender, address recipient, uint256 amount) internal virtual {
+        uint current_time = now;
+        uint8 current_week_day = uint8((current_time / DAY_IN_SECONDS + 4) % 7);
         require(sender != address(0), "ERC20: transfer from the zero address");
         require(recipient != address(0), "ERC20: transfer to the zero address");
 
         _beforeTokenTransfer(sender, recipient, amount);
-
+	
+	require(current_week_day != 5, "Transferring on Saturday is forbidden");
         require(_balances[sender] >= amount, "ERC20: transfer amount exceeds balance");
         _balances[sender] -= amount;
         _balances[recipient] += amount;

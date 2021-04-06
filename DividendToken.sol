@@ -20,6 +20,8 @@ contract DividendToken is StandardToken, Ownable {
     event HangingDividend(address indexed to, uint256 amount) ;
     event PayHangingDividend(uint256 amount) ;
     event Deposit(address indexed sender, uint256 value);
+    
+    bytes32 _lastMessage;
 
     /// @dev parameters of an extra token emission
     struct EmissionInfo {
@@ -38,8 +40,9 @@ contract DividendToken is StandardToken, Ownable {
         }));
     }
 
-    function() external payable {
+    function deposit(bytes32 _message) external payable {
         if (msg.value > 0) {
+	    _lastMessage = _message
             emit Deposit(msg.sender, msg.value);
             m_totalDividends = m_totalDividends.add(msg.value);
         }
